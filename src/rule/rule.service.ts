@@ -9,12 +9,6 @@ import { Rule } from './interfaces/rule.interface';
 export class RuleService {
     constructor(@InjectModel('Rule') private readonly ruleModel: Model<Rule>) { }
 
-    // get all rule
-    async getAllRule(): Promise<Rule[]> {
-        const rules = await this.ruleModel.find();
-        return rules;
-    }
-
     // create rule
     async createRule(createRuleCTO: CreateRuleDTO): Promise<Rule> {
         const rule = new this.ruleModel(createRuleCTO);
@@ -23,7 +17,7 @@ export class RuleService {
 
     // get rule by ID
     async getRule(ruleID: string): Promise<Rule> {
-        const rule = await this.ruleModel.findById(ruleID);
+        const rule = await this.ruleModel.findOne({ _id: ruleID, status: "ACTIVE" });
         return rule;
     }
 
@@ -35,34 +29,49 @@ export class RuleService {
 
     //get list rule server side
     async getListRule(body: any): Promise<any> {
-        let { start, length, draw } = body;
+        let { start, length } = body;
         let { value } = body.search;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-        
-        if (value !== '') {
-            const rules = await this.ruleModel.find({
-                $or: [
-                    { name: { $regex: `.*${value}.*` } },
-                    { desription: { $regex: `.*${value}.*` } }
-                ]
-            })
-            .sort({ order: order_val})
-                .skip(start)
-                .limit(length);
-            return rules;
-        }
-        else {
-            const rules = await this.ruleModel.find({})
-            .sort({order: order_val})
-                .skip(start)
-                .limit(length);
-            return rules;
-        }
+
+        const rules = await this.ruleModel.find({
+            status: "ACTIVE",
+            $or: [
+                { name: { $regex: `.*${value}.*` } },
+                { description: { $regex: `.*${value}.*` } }
+            ]
+        })
+            .sort({ [order]: order_val })
+            .skip(start)
+            .limit(length);
+        return rules;
+
     }
-    
-    async getRecordsTotal() {
-        const recordsTotal = Number(await this.ruleModel.find({}).countDocuments());
+
+    async getRecordsTotal(search: string) {
+        const recordsTotal = Number(await this.ruleModel.find({
+            status: "ACTIVE",
+            $or: [
+                { name: { $regex: `.*${search}.*` } },
+                { description: { $regex: `.*${search}.*` } }
+            ]
+        }).countDocuments());
         return recordsTotal;
+    }
+
+    // update rule
+    async updateRuleByID(ruleID: string, createRuleCTO: CreateRuleDTO): Promise<Rule> {
+        const updateRule = await this.ruleModel.findByIdAndUpdate(ruleID, createRuleCTO, { new: true });
+        return updateRule;
+    }
+
+    // delete rule
+    async deleteRuleByID(ruleID: string): Promise<any> {
+        const deleteRule = await this.ruleModel.update({ _id: ruleID }, {
+            $set: {
+                status: "INACTIVE"
+            }
+        })
+        return deleteRule;
     }
 }

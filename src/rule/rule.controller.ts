@@ -1,17 +1,10 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Post, Put, Query, Res, Param } from '@nestjs/common';
 import { CreateRuleDTO } from './dto/rule.dto';
 import { RuleService } from './rule.service';
 
 @Controller('rule')
 export class RuleController {
     constructor(private ruleService: RuleService) { }
-
-
-    @Get('/all')
-    async getAllRule(@Res() res) {
-        const rule = await this.ruleService.getAllRule();
-        return res.status(HttpStatus.OK).json(rule);
-    }
 
     @Post('/create')
     async createRule(@Res() res, @Body() createRuleDTO: CreateRuleDTO) {
@@ -33,16 +26,40 @@ export class RuleController {
 
     @Post('/list')
     async getListRule(@Res() res, @Body() body: any) {
-        console.log(body);
         let { draw } = body;
+        let { value } = body.search;
         const data = await this.ruleService.getListRule(body);
-        console.log(data);
-        const recordsTotal = await this.ruleService.getRecordsTotal();
+        const recordsTotal = await this.ruleService.getRecordsTotal(value);
         return res.status(HttpStatus.OK).json({
             data,
             recordsTotal,
             recordsFiltered: recordsTotal,
             draw
+        })
+    }
+
+    @Get('/:ruleID')
+    async getRule(@Res() res, @Param('ruleID') ruleID: string) {
+        const rule = await this.ruleService.getRule(ruleID);
+        if (!rule) throw new NotFoundException("Rule does not exit!");
+        return res.status(HttpStatus.OK).json(rule);
+    }
+
+    @Put('/update')
+    async updateRule(@Res() res, @Query('ruleID') ruleID: string, @Body() createRuleDTO: CreateRuleDTO) {
+        const updateRule = await this.ruleService.updateRuleByID(ruleID, createRuleDTO);
+        if (!updateRule) throw new NotFoundException("Rule does not exit!")
+        return res.status(HttpStatus.OK).json({
+            updateRule
+        })
+    }
+
+    @Delete('/')
+    async deleteRule(@Res() res, @Query('ruleID') ruleID: string) {
+        const deleteRule = await this.ruleService.deleteRuleByID(ruleID);
+        if (!deleteRule) throw new NotFoundException("Rule does not exit!");
+        return res.status(HttpStatus.OK).json({
+            deleteRule
         })
     }
 
