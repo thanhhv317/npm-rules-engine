@@ -17,7 +17,7 @@ export class RuleService {
 
     // get rule by ID
     async getRule(ruleID: string): Promise<Rule> {
-        const rule = await this.ruleModel.findOne({ _id: ruleID, status: "ACTIVE" });
+        const rule = await this.ruleModel.findOne({ _id: ruleID, status: { $ne: "DELETE" } });
         return rule;
     }
 
@@ -35,7 +35,7 @@ export class RuleService {
         let order_val = body.order[0]["dir"];
 
         const rules = await this.ruleModel.find({
-            status: "ACTIVE",
+            status: { $ne: "DELETE" },
             $or: [
                 { name: { $regex: `.*${value}.*` } },
                 { description: { $regex: `.*${value}.*` } }
@@ -50,7 +50,7 @@ export class RuleService {
 
     async getRecordsTotal(search: string) {
         const recordsTotal = Number(await this.ruleModel.find({
-            status: "ACTIVE",
+            status: { $ne: "DELETE" },
             $or: [
                 { name: { $regex: `.*${search}.*` } },
                 { description: { $regex: `.*${search}.*` } }
@@ -69,7 +69,7 @@ export class RuleService {
     async deleteRuleByID(ruleID: string): Promise<any> {
         const deleteRule = await this.ruleModel.update({ _id: ruleID }, {
             $set: {
-                status: "INACTIVE"
+                status: "DELETE"
             }
         })
         return deleteRule;
