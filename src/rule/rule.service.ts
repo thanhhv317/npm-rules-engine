@@ -32,7 +32,6 @@ export class RuleService {
         let { value } = body.search;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-
         const rules = await this.ruleModel.find({
             $or: [
                 { name: { $regex: `.*${value}.*` } },
@@ -43,7 +42,6 @@ export class RuleService {
             .skip(start)
             .limit(length);
         return rules;
-
     }
 
     async getRecordsTotal(search: string) {

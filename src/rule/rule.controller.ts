@@ -15,7 +15,7 @@ export class RuleController {
         })
     }
 
-    // Drop
+    // Delete all with status is DELETE
     @Delete('/delete_all')
     async deleteAll(@Res() res) {
         const deleteRules = await this.ruleService.deleteRules();
@@ -42,7 +42,6 @@ export class RuleController {
 
     @Post('/filter')
     async getListFilter(@Res() res, @Body() body: any) {
-        // to do
         const data = await this.ruleService.getListRuleFilter(body);
         return res.status(HttpStatus.OK).json({
             data,
@@ -73,6 +72,4 @@ export class RuleController {
             deleteRule
         })
     }
-
-
 }
