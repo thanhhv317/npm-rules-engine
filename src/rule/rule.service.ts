@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { CreateRuleDTO } from './dto/rule.dto';
 import { Rule } from './interfaces/rule.interface';
 
-
 @Injectable()
 export class RuleService {
     constructor(@InjectModel('Rule') private readonly ruleModel: Model<Rule>) { }
@@ -17,13 +16,13 @@ export class RuleService {
 
     // get rule by ID
     async getRule(ruleID: string): Promise<Rule> {
-        const rule = await this.ruleModel.findOne({ _id: ruleID, status: { $ne: "DELETE" } });
+        const rule = await this.ruleModel.findOne({ _id: ruleID });
         return rule;
     }
 
     // delete all
     async deleteRules() {
-        const rules = await this.ruleModel.deleteMany({});
+        const rules = await this.ruleModel.deleteMany({ status: "DELETE" });
         return rules;
     }
 
@@ -35,7 +34,6 @@ export class RuleService {
         let order_val = body.order[0]["dir"];
 
         const rules = await this.ruleModel.find({
-            status: { $ne: "DELETE" },
             $or: [
                 { name: { $regex: `.*${value}.*` } },
                 { description: { $regex: `.*${value}.*` } }
@@ -50,13 +48,53 @@ export class RuleService {
 
     async getRecordsTotal(search: string) {
         const recordsTotal = Number(await this.ruleModel.find({
-            status: { $ne: "DELETE" },
             $or: [
                 { name: { $regex: `.*${search}.*` } },
                 { description: { $regex: `.*${search}.*` } }
             ]
         }).countDocuments());
         return recordsTotal;
+    }
+
+    // get list rule filter
+    async getListRuleFilter(body: any): Promise<any> {
+        let { status, to, from, start, length } = body;
+        if (status === 'ALL') {
+            if (to !== '' && from !== '') {
+                const rules = await this.ruleModel.find({
+                    from: {
+                        $gte: from
+                    },
+                    to: {
+                        $lte: to
+                    }
+                })
+                return rules;
+            }
+            else {
+                const rules = await this.ruleModel.find({})
+                return rules;
+            }
+        } else {
+            if (to !== '' && from !== '') {
+                const rules = await this.ruleModel.find({
+                    status: status,
+                    from: {
+                        $gte: from
+                    },
+                    to: {
+                        $lte: to
+                    }
+                })
+                return rules;
+            } 
+            else {
+                const rules = await this.ruleModel.find({
+                    status: status
+                })
+                return rules;
+            }
+        }
     }
 
     // update rule
@@ -67,7 +105,7 @@ export class RuleService {
 
     // delete rule
     async deleteRuleByID(ruleID: string): Promise<any> {
-        const deleteRule = await this.ruleModel.update({ _id: ruleID }, {
+        const deleteRule = await this.ruleModel.updateOne({ _id: ruleID }, {
             $set: {
                 status: "DELETE"
             }
