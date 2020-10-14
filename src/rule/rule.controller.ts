@@ -26,28 +26,25 @@ export class RuleController {
 
     @Post('/list')
     async getListRule(@Res() res, @Body() body: any) {
-        let { draw, start, length } = body;
+        try {
+            console.log(body.filter);
+            let { draw, start, length } = body;
+            const data = await this.ruleService.getListRule(body);
+            const recordsTotal = await this.ruleService.getRecordsTotal(body);
+            return res.status(HttpStatus.OK).json({
+                data,
+                recordsTotal,
+                recordsFiltered: recordsTotal,
+                draw,
+                start,
+                length
+            })
+        } catch (e) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                message: 'error/500'
+            })
+        }
 
-        const data = await this.ruleService.getListRule(body);
-        const recordsTotal = await this.ruleService.getRecordsTotal(body);
-        return res.status(HttpStatus.OK).json({
-            data,
-            recordsTotal,
-            recordsFiltered: recordsTotal,
-            draw,
-            start,
-            length
-        })
-
-
-    }
-
-    @Post('/filter')
-    async getListFilter(@Res() res, @Body() body: any) {
-        const data = await this.ruleService.getListRuleFilter(body);
-        return res.status(HttpStatus.OK).json({
-            data,
-        })
     }
 
     @Get('/:ruleID')
