@@ -1,3 +1,4 @@
+import { timeStamp } from 'console';
 import { Schema } from 'mongoose';
 
 export const RuleSchema = new Schema({
@@ -13,4 +14,6 @@ export const RuleSchema = new Schema({
     actions: String,
     data: String,
     createdAt: { type: Date, default: Date.now }
+}, {
+    timestamps: true,
 })

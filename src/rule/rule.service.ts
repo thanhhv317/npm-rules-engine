@@ -28,30 +28,191 @@ export class RuleService {
 
     //get list rule server side
     async getListRule(body: any): Promise<any> {
-        let { start, length } = body;
-        let { value } = body.search;
+        let { start, length, filter } = body;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-        const rules = await this.ruleModel.find({
-            $or: [
-                { name: { $regex: `.*${value}.*` } },
-                { description: { $regex: `.*${value}.*` } }
-            ]
-        })
-            .sort({ [order]: order_val })
-            .skip(start)
-            .limit(length);
-        return rules;
+        let { name, description, from, to, status } = filter;
+
+        if (status === 'ALL') {
+            if (to === '') {
+                if (from === '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` }
+                    })
+                        .sort({ [order]: order_val })
+                        .skip(start)
+                        .limit(length);
+                    return rules;
+                } else if (from !== '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        from: { $gte: from }
+                    })
+                        .sort({ [order]: order_val })
+                        .skip(start)
+                        .limit(length);
+                    return rules;
+                }
+            } else if (to !== '') {
+                if (from === '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        to: { $lte: to }
+                    })
+                        .sort({ [order]: order_val })
+                        .skip(start)
+                        .limit(length);
+                    return rules;
+                } else if (from !== '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        from: { $gte: from },
+                        to: { $lte: to }
+                    })
+                        .sort({ [order]: order_val })
+                        .skip(start)
+                        .limit(length);
+                    return rules;
+                }
+            }
+        } else {
+            if (status !== 'ALL') {
+                if (to === '') {
+                    if (from === '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            status
+                        })
+                            .sort({ [order]: order_val })
+                            .skip(start)
+                            .limit(length);
+                        return rules;
+                    } else if (from !== '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            from: { $gte: from },
+                            status
+                        })
+                            .sort({ [order]: order_val })
+                            .skip(start)
+                            .limit(length);
+                        return rules;
+                    }
+                } else if (to !== '') {
+                    if (from === '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            to: { $lte: to },
+                            status
+                        })
+                            .sort({ [order]: order_val })
+                            .skip(start)
+                            .limit(length);
+                        return rules;
+                    } else if (from !== '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            from: { $gte: from },
+                            to: { $lte: to },
+                            status
+                        })
+                            .sort({ [order]: order_val })
+                            .skip(start)
+                            .limit(length);
+                        return rules;
+                    }
+                }
+            }
+        }
     }
 
-    async getRecordsTotal(search: string) {
-        const recordsTotal = Number(await this.ruleModel.find({
-            $or: [
-                { name: { $regex: `.*${search}.*` } },
-                { description: { $regex: `.*${search}.*` } }
-            ]
-        }).countDocuments());
-        return recordsTotal;
+    async getRecordsTotal(body: any) {
+        let { filter } = body;
+        let { name, description, from, to, status } = filter;
+
+        if (status === 'ALL') {
+            if (to === '') {
+                if (from === '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` }
+                    }).countDocuments();
+                    return rules;
+                } else if (from !== '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        from: { $gte: from }
+                    }).countDocuments();
+                    return rules;
+                }
+            } else if (to !== '') {
+                if (from === '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        to: { $lte: to }
+                    }).countDocuments();
+                    return rules;
+                } else if (from !== '') {
+                    const rules = await this.ruleModel.find({
+                        name: { $regex: `.*${name}.*` },
+                        description: { $regex: `.*${description}.*` },
+                        from: { $gte: from },
+                        to: { $lte: to }
+                    }).countDocuments();
+                    return rules;
+                }
+            }
+        } else {
+            if (status !== 'ALL') {
+                if (to === '') {
+                    if (from === '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            status
+                        }).countDocuments();
+                        return rules;
+                    } else if (from !== '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            from: { $gte: from },
+                            status
+                        }).countDocuments();
+                        return rules;
+                    }
+                } else if (to !== '') {
+                    if (from === '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            to: { $lte: to },
+                            status
+                        }).countDocuments();
+                        return rules;
+                    } else if (from !== '') {
+                        const rules = await this.ruleModel.find({
+                            name: { $regex: `.*${name}.*` },
+                            description: { $regex: `.*${description}.*` },
+                            from: { $gte: from },
+                            to: { $lte: to },
+                            status
+                        }).countDocuments();
+                        return rules;
+                    }
+                }
+            }
+        }
     }
 
     // get list rule filter
@@ -85,7 +246,7 @@ export class RuleService {
                     }
                 })
                 return rules;
-            } 
+            }
             else {
                 const rules = await this.ruleModel.find({
                     status: status

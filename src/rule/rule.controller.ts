@@ -27,9 +27,9 @@ export class RuleController {
     @Post('/list')
     async getListRule(@Res() res, @Body() body: any) {
         let { draw, start, length } = body;
-        let { value } = body.search;
+
         const data = await this.ruleService.getListRule(body);
-        const recordsTotal = await this.ruleService.getRecordsTotal(value);
+        const recordsTotal = await this.ruleService.getRecordsTotal(body);
         return res.status(HttpStatus.OK).json({
             data,
             recordsTotal,
@@ -38,6 +38,8 @@ export class RuleController {
             start,
             length
         })
+
+
     }
 
     @Post('/filter')
@@ -72,4 +74,5 @@ export class RuleController {
             deleteRule
         })
     }
+
 }
