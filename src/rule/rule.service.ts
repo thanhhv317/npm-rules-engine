@@ -22,7 +22,7 @@ export class RuleService {
 
     // delete all
     async deleteRules() {
-        const rules = await this.ruleModel.deleteMany({ });
+        const rules = await this.ruleModel.deleteMany({});
         return rules;
     }
 
@@ -31,22 +31,26 @@ export class RuleService {
         let { start, length, filter } = body;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-        let { name, description, from, to, status } = filter;
+        let { name, description, from_date, to_date, status, priority } = filter;
         let condition = {
             name: { $regex: `.*${name}.*` },
             description: { $regex: `.*${description}.*` }
         };
+        if (priority) {
+            condition['priority'] = priority;
+        }
         if (status !== 'ALL') {
-            condition['status'] = status;
+            condition['active'] = (status === 'true');
         }
         if (status === 'ALL') {
-            if (from !== '') {
-                condition['from'] = { $gte: from };
+            if (from_date) {
+                condition['from_date'] = { $gte: from_date };
             }
-            if (to !== '') {
-                condition['to'] = { $lte: to };
+            if (to_date) {
+                condition['to_date'] = { $lte: to_date };
             }
         }
+        console.log(condition);
         const rules = await this.ruleModel.find(condition).sort({ [order]: order_val }).skip(start).limit(length);
         return rules;
     }

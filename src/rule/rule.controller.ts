@@ -27,7 +27,7 @@ export class RuleController {
     @Post('/list')
     async getListRule(@Res() res, @Body() body: any) {
         try {
-            console.log(body.filter);
+            console.log(body);
             let { draw, start, length } = body;
             const data = await this.ruleService.getListRule(body);
             const recordsTotal = await this.ruleService.getRecordsTotal(body);
