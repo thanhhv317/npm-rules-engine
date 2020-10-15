@@ -2,18 +2,16 @@ import { timeStamp } from 'console';
 import { Schema } from 'mongoose';
 
 export const RuleSchema = new Schema({
+    fee_type: Number,
+    to_date: Number,
+    from_date: Number,
+    priority: Number,
+    active: Boolean,
     name: String,
     description: String,
-    status: {
-        type: String,
-        enum: ["ACTIVE", "INACTIVE", "DELETE"]
-    },
-    from: Date,
-    to: Date,
-    conditions: String,
-    actions: String,
-    data: String,
-    createdAt: { type: Date, default: Date.now }
+    type: String,
+    event: String,
+    conditions: String
 }, {
     timestamps: true,
 })

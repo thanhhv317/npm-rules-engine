@@ -22,7 +22,7 @@ export class RuleService {
 
     // delete all
     async deleteRules() {
-        const rules = await this.ruleModel.deleteMany({ status: "DELETE" });
+        const rules = await this.ruleModel.deleteMany({ });
         return rules;
     }
 
