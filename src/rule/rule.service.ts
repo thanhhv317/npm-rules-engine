@@ -31,10 +31,10 @@ export class RuleService {
         let { start, length, filter } = body;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-        let { name, description, from_date, to_date, status, priority } = filter;
+        let { name, type, from_date, to_date, status, priority } = filter;
         let condition = {
             name: { $regex: `.*${name}.*` },
-            description: { $regex: `.*${description}.*` }
+            type: { $regex: `.*${type}.*` }
         };
         if (priority) {
             condition['priority'] = priority;
@@ -50,27 +50,29 @@ export class RuleService {
                 condition['to_date'] = { $lte: to_date };
             }
         }
-        console.log(condition);
         const rules = await this.ruleModel.find(condition).sort({ [order]: order_val }).skip(start).limit(length);
         return rules;
     }
 
     async getRecordsTotal(body: any) {
         let { filter } = body;
-        let { name, description, from, to, status } = filter;
+        let { name, type, from_date, to_date, status, priority } = filter;
         let condition = {
             name: { $regex: `.*${name}.*` },
-            description: { $regex: `.*${description}.*` }
+            type: { $regex: `.*${type}.*` }
         };
+        if (priority) {
+            condition['priority'] = priority;
+        }
         if (status !== 'ALL') {
-            condition['status'] = status;
+            condition['active'] = (status === 'true');
         }
         if (status === 'ALL') {
-            if (from !== '') {
-                condition['from'] = { $gte: from };
+            if (from_date) {
+                condition['from_date'] = { $gte: from_date };
             }
-            if (to !== '') {
-                condition['to'] = { $lte: to };
+            if (to_date) {
+                condition['to_date'] = { $lte: to_date };
             }
         }
         const recordsTotal = await this.ruleModel.find(condition).countDocuments();
@@ -87,7 +89,7 @@ export class RuleService {
     async deleteRuleByID(ruleID: string): Promise<any> {
         const deleteRule = await this.ruleModel.updateOne({ _id: ruleID }, {
             $set: {
-                status: "DELETE"
+                active: false
             }
         })
         return deleteRule;
