@@ -39,16 +39,14 @@ export class RuleService {
         if (priority) {
             condition['priority'] = priority;
         }
+        if (from_date) {
+            condition['from_date'] = { $gte: from_date };
+        }
+        if (to_date) {
+            condition['to_date'] = { $lte: to_date };
+        }
         if (status !== 'ALL') {
             condition['active'] = (status === 'true');
-        }
-        if (status === 'ALL') {
-            if (from_date) {
-                condition['from_date'] = { $gte: from_date };
-            }
-            if (to_date) {
-                condition['to_date'] = { $lte: to_date };
-            }
         }
         const rules = await this.ruleModel.find(condition).sort({ [order]: order_val }).skip(start).limit(length);
         return rules;
@@ -64,17 +62,16 @@ export class RuleService {
         if (priority) {
             condition['priority'] = priority;
         }
+        if (from_date) {
+            condition['from_date'] = { $gte: from_date };
+        }
+        if (to_date) {
+            condition['to_date'] = { $lte: to_date };
+        }
         if (status !== 'ALL') {
             condition['active'] = (status === 'true');
         }
-        if (status === 'ALL') {
-            if (from_date) {
-                condition['from_date'] = { $gte: from_date };
-            }
-            if (to_date) {
-                condition['to_date'] = { $lte: to_date };
-            }
-        }
+       
         const recordsTotal = await this.ruleModel.find(condition).countDocuments();
         return recordsTotal;
     }
