@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Post, Put
 import { CreateRuleDTO } from './dto/rule.dto';
 import { RuleService } from './rule.service';
 
-@Controller('rule')
+@Controller('rules')
 export class RuleController {
     constructor(private ruleService: RuleService) { }
 
@@ -15,16 +15,7 @@ export class RuleController {
         })
     }
 
-    // Delete all with status is DELETE
-    @Delete('/delete_all')
-    async deleteAll(@Res() res) {
-        const deleteRules = await this.ruleService.deleteRules();
-        return res.status(HttpStatus.OK).json({
-            deleteRules
-        })
-    }
-
-    @Post('/list')
+    @Post('/')
     async getListRule(@Res() res, @Body() body: any) {
         try {
             let { draw, start, length } = body;

@@ -9,7 +9,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     useNewUrlParser: true,
     useFindAndModify: false 
   }),
-    RuleModule],
+    RuleModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
