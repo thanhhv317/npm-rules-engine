@@ -6,11 +6,9 @@ import { AppInternalService } from './appInternal.service';
 export class AppInternalController {
   constructor(private readonly appInternalService: AppInternalService) {}
 
-  
-  @Get()
+  @Get('*')
   root(@Res() res) {
     return res.sendFile(resolve('./public/dist/my-app/index.html'));;
   }
-
 
 }

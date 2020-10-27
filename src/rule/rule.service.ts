@@ -31,46 +31,14 @@ export class RuleService {
         let { start, length, filter } = body;
         let order = body.columns[body.order[0]["column"]].data;
         let order_val = body.order[0]["dir"];
-        let { name, type, from_date, to_date, status, priority } = filter;
-        let condition = {
-            name: { $regex: `.*${name}.*` },
-            type: { $regex: `.*${type}.*` }
-        };
-        if (priority) {
-            condition['priority'] = priority;
-        }
-        if (from_date) {
-            condition['from_date'] = { $gte: from_date };
-        }
-        if (to_date) {
-            condition['to_date'] = { $lte: to_date };
-        }
-        if (status !== 'ALL') {
-            condition['active'] = (status === 'true');
-        }
+        let condition = this.getCondition(filter);
         const rules = await this.ruleModel.find(condition).sort({ [order]: order_val }).skip(start).limit(length);
         return rules;
     }
 
     async getRecordsTotal(body: any) {
         let { filter } = body;
-        let { name, type, from_date, to_date, status, priority } = filter;
-        let condition = {
-            name: { $regex: `.*${name}.*` },
-            type: { $regex: `.*${type}.*` }
-        };
-        if (priority) {
-            condition['priority'] = priority;
-        }
-        if (from_date) {
-            condition['from_date'] = { $gte: from_date };
-        }
-        if (to_date) {
-            condition['to_date'] = { $lte: to_date };
-        }
-        if (status !== 'ALL') {
-            condition['active'] = (status === 'true');
-        }
+        let condition = this.getCondition(filter);
        
         const recordsTotal = await this.ruleModel.find(condition).countDocuments();
         return recordsTotal;
@@ -90,5 +58,26 @@ export class RuleService {
             }
         })
         return deleteRule;
+    }
+
+    getCondition(filter: any): any {
+        let { name, type, from_date, to_date, status, priority } = filter;
+        let condition = {
+            name: { $regex: `.*${name}.*` },
+            type: { $regex: `.*${type}.*` }
+        };
+        if (priority) {
+            condition['priority'] = priority;
+        }
+        if (from_date) {
+            condition['from_date'] = { $gte: from_date };
+        }
+        if (to_date) {
+            condition['to_date'] = { $lte: to_date };
+        }
+        if (status !== 'ALL') {
+            condition['active'] = (status === 'true');
+        }
+        return condition;
     }
 }
