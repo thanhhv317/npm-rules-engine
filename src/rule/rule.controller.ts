@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Post, Put, Query, Res, Param } from '@nestjs/common';
-import { CreateRuleDTO } from './dto/rule.dto';
+import { Body, Controller, HttpStatus, NotFoundException, Post, Res } from '@nestjs/common';
 import { RuleService } from './rule.service';
 
 @Controller('rules')

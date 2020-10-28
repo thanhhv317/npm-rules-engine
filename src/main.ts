@@ -17,10 +17,7 @@ async function bootstrap() {
     AppModule,
     new ExpressAdapter(server),
   );
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
-  app.enableCors();
+
   await app.init();
   http.createServer(server).listen(3000);
 
@@ -30,9 +27,7 @@ async function bootstrap() {
     AppInternalModule,
     new ExpressAdapter(serverInternal),
   );
-  appInternal.useStaticAssets(join(__dirname, '..', 'public'));
-  appInternal.setBaseViewsDir(join(__dirname, '..', 'views'));
-  appInternal.setViewEngine('hbs');
+  appInternal.useStaticAssets(join(__dirname, '..', 'public/dist/my-app/'));
   appInternal.enableCors();
   await appInternal.init();
   http.createServer(serverInternal).listen(4001);
