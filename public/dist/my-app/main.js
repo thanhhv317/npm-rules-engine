@@ -1379,9 +1379,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class RuleService {
-    // private REST_API_SERVER = "http://localhost:4001";
-    constructor(httpClient, _cookieService) {
-        this.httpClient = httpClient;
+    constructor(_httpClient, _cookieService) {
+        this._httpClient = _httpClient;
         this._cookieService = _cookieService;
         this.httpOptions = {
             headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_0__["HttpHeaders"]({
@@ -1395,7 +1394,7 @@ class RuleService {
             action: 'create',
             createRuleDTO: backendRule
         };
-        return this.httpClient.post('/rules', body, this.httpOptions).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
+        return this._httpClient.post('/rules', body, this.httpOptions).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
     }
     updateData(ruleId, rule) {
         let body = {
@@ -1403,18 +1402,18 @@ class RuleService {
             ruleID: ruleId,
             createRuleDTO: rule
         };
-        return this.httpClient.post('/rules', body, this.httpOptions);
+        return this._httpClient.post('/rules', body, this.httpOptions);
     }
     getRule(ruleId) {
         ruleId.action = 'get_rule';
-        return this.httpClient.post('/rules', ruleId, this.httpOptions);
+        return this._httpClient.post('/rules', ruleId, this.httpOptions);
     }
     deleteRule(ruleID) {
         let obj = {
             action: 'delete',
             ruleID
         };
-        return this.httpClient.post('/rules', obj, this.httpOptions);
+        return this._httpClient.post('/rules', obj, this.httpOptions);
     }
     handleError(error) {
         let errorMessage = 'Unknown error!';
@@ -1828,27 +1827,27 @@ function AppComponent_div_3_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "div", 19);
 } }
 class AppComponent {
-    constructor(authenticationService, router, _cookieService) {
-        this.authenticationService = authenticationService;
-        this.router = router;
+    constructor(_authenticationService, _router, _cookieService) {
+        this._authenticationService = _authenticationService;
+        this._router = _router;
         this._cookieService = _cookieService;
         this.isLogin = false;
         this.level = false; // [1: Admin = true, 2: User = false]
         this.isLogin = (this._cookieService.get('userToken')) ? true : false;
         this.username = this._cookieService.get('username') || '';
         this.level = (this._cookieService.get('userLevel') && this._cookieService.get('userLevel') === '1') ? true : false;
-        authenticationService.changeEmitted$.subscribe(res => {
+        _authenticationService.changeEmitted$.subscribe(res => {
             this.isLogin = res.isLogin;
             this.username = res.username;
             this.level = res.level.toString() === '1' ? true : false;
-            this.router.navigateByUrl('/');
+            this._router.navigateByUrl('/');
         });
         this.checkLogin();
     }
     checkLogin() {
         if (!this.isLogin) {
             let path = '/login';
-            this.router.navigateByUrl(path);
+            this._router.navigateByUrl(path);
         }
     }
     logout() {
@@ -1904,19 +1903,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class LoginComponent {
-    constructor(authenticationService, _cookieService, notifierService, router) {
-        this.authenticationService = authenticationService;
+    constructor(_authenticationService, _cookieService, notifierService, _router) {
+        this._authenticationService = _authenticationService;
         this._cookieService = _cookieService;
-        this.router = router;
-        this.notifier = notifierService;
+        this._router = _router;
+        this._notifier = notifierService;
         if (this._cookieService.get('userToken')) {
-            this.router.navigateByUrl('/');
+            this._router.navigateByUrl('/');
         }
     }
     ngOnInit() {
         this.user = {
-            username: '',
-            password: ''
+            username: null,
+            password: null
         };
     }
     onChange(event) {
@@ -1925,25 +1924,29 @@ class LoginComponent {
         this.user[name] = value;
     }
     login() {
-        this.authenticationService.login(this.user).subscribe((res) => {
+        if (!this.user.username || !this.user.password) {
+            this._notifier.notify('error', 'Username and Password is required');
+            return;
+        }
+        this._authenticationService.login(this.user).subscribe((res) => {
             this._cookieService.set('userToken', res.access_token);
             this._cookieService.set('username', res.username);
             this._cookieService.set('userLevel', res.level);
-            this.notifier.notify("success", "Logged in successfully");
+            this._notifier.notify("success", "Logged in successfully");
             // send data
             let data = {
                 isLogin: true,
                 username: res.username,
                 level: res.level
             };
-            this.authenticationService.emitChange(data);
+            this._authenticationService.emitChange(data);
         }, (err) => {
-            this.notifier.notify("error", err.error.message);
+            this._notifier.notify("error", err.error.message);
         });
     }
 }
 LoginComponent.ɵfac = function LoginComponent_Factory(t) { return new (t || LoginComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services__WEBPACK_IMPORTED_MODULE_1__["AuthenticationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_cookie_service__WEBPACK_IMPORTED_MODULE_2__["CookieService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](angular_notifier__WEBPACK_IMPORTED_MODULE_3__["NotifierService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"])); };
-LoginComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: LoginComponent, selectors: [["app-login"]], decls: 14, vars: 0, consts: [[1, "imgcontainer"], ["src", "https://www.w3schools.com/howto/img_avatar2.png", "alt", "Avatar", 1, "avatar"], [1, "container"], ["for", "uname"], ["type", "text", "placeholder", "Enter Username", "name", "username", 3, "change"], ["for", "psw"], ["type", "password", "placeholder", "Enter Password", "name", "password", 3, "change"], [3, "click"]], template: function LoginComponent_Template(rf, ctx) { if (rf & 1) {
+LoginComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: LoginComponent, selectors: [["app-login"]], decls: 14, vars: 0, consts: [[1, "imgcontainer"], ["src", "../../../assets//images/1.jpg", "alt", "Avatar", 1, "avatar"], [1, "container"], ["for", "uname"], ["type", "text", "placeholder", "Enter Username", "name", "username", 3, "change"], ["for", "psw"], ["type", "password", "placeholder", "Enter Password", "name", "password", 3, "change"], [3, "click"]], template: function LoginComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "form");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 1);
@@ -1971,7 +1974,7 @@ LoginComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCom
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_5__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgForm"]], styles: ["input[type=text][_ngcontent-%COMP%], input[type=password][_ngcontent-%COMP%] {\r\n    width: 100%;\r\n    padding: 12px 20px;\r\n    margin: 8px 0;\r\n    display: inline-block;\r\n    border: 1px solid #ccc;\r\n    box-sizing: border-box;\r\n}\r\n\r\nbutton[_ngcontent-%COMP%] {\r\n    background-color: #4fc3f7;\r\n    color: white;\r\n    padding: 14px 20px;\r\n    margin: 8px 0;\r\n    border: none;\r\n    cursor: pointer;\r\n    width: 100%;\r\n}\r\n\r\nbutton[_ngcontent-%COMP%]:hover {\r\n    opacity: 0.8;\r\n}\r\n\r\n.imgcontainer[_ngcontent-%COMP%] {\r\n    text-align: center;\r\n    margin: 24px 0 12px 0;\r\n}\r\n\r\nimg.avatar[_ngcontent-%COMP%] {\r\n    width: 20%;\r\n    border-radius: 50%;\r\n}\r\n\r\n\r\n\r\n@media screen and (max-width: 300px) {\r\n    span.psw[_ngcontent-%COMP%] {\r\n        display: block;\r\n        float: none;\r\n    }\r\n    .cancelbtn[_ngcontent-%COMP%] {\r\n        width: 100%;\r\n    }\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9sb2dpbi9sb2dpbi5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztJQUVJLFdBQVc7SUFDWCxrQkFBa0I7SUFDbEIsYUFBYTtJQUNiLHFCQUFxQjtJQUNyQixzQkFBc0I7SUFDdEIsc0JBQXNCO0FBQzFCOztBQUVBO0lBQ0kseUJBQXlCO0lBQ3pCLFlBQVk7SUFDWixrQkFBa0I7SUFDbEIsYUFBYTtJQUNiLFlBQVk7SUFDWixlQUFlO0lBQ2YsV0FBVztBQUNmOztBQUVBO0lBQ0ksWUFBWTtBQUNoQjs7QUFFQTtJQUNJLGtCQUFrQjtJQUNsQixxQkFBcUI7QUFDekI7O0FBRUE7SUFDSSxVQUFVO0lBQ1Ysa0JBQWtCO0FBQ3RCOztBQUdBLG9FQUFvRTs7QUFFcEU7SUFDSTtRQUNJLGNBQWM7UUFDZCxXQUFXO0lBQ2Y7SUFDQTtRQUNJLFdBQVc7SUFDZjtBQUNKIiwiZmlsZSI6InNyYy9hcHAvY29tcG9uZW50cy9sb2dpbi9sb2dpbi5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiaW5wdXRbdHlwZT10ZXh0XSxcclxuaW5wdXRbdHlwZT1wYXNzd29yZF0ge1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgICBwYWRkaW5nOiAxMnB4IDIwcHg7XHJcbiAgICBtYXJnaW46IDhweCAwO1xyXG4gICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gICAgYm9yZGVyOiAxcHggc29saWQgI2NjYztcclxuICAgIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XHJcbn1cclxuXHJcbmJ1dHRvbiB7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjNGZjM2Y3O1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG4gICAgcGFkZGluZzogMTRweCAyMHB4O1xyXG4gICAgbWFyZ2luOiA4cHggMDtcclxuICAgIGJvcmRlcjogbm9uZTtcclxuICAgIGN1cnNvcjogcG9pbnRlcjtcclxuICAgIHdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG5idXR0b246aG92ZXIge1xyXG4gICAgb3BhY2l0eTogMC44O1xyXG59XHJcblxyXG4uaW1nY29udGFpbmVyIHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIG1hcmdpbjogMjRweCAwIDEycHggMDtcclxufVxyXG5cclxuaW1nLmF2YXRhciB7XHJcbiAgICB3aWR0aDogMjAlO1xyXG4gICAgYm9yZGVyLXJhZGl1czogNTAlO1xyXG59XHJcblxyXG5cclxuLyogQ2hhbmdlIHN0eWxlcyBmb3Igc3BhbiBhbmQgY2FuY2VsIGJ1dHRvbiBvbiBleHRyYSBzbWFsbCBzY3JlZW5zICovXHJcblxyXG5AbWVkaWEgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiAzMDBweCkge1xyXG4gICAgc3Bhbi5wc3cge1xyXG4gICAgICAgIGRpc3BsYXk6IGJsb2NrO1xyXG4gICAgICAgIGZsb2F0OiBub25lO1xyXG4gICAgfVxyXG4gICAgLmNhbmNlbGJ0biB7XHJcbiAgICAgICAgd2lkdGg6IDEwMCU7XHJcbiAgICB9XHJcbn0iXX0= */"] });
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_5__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgForm"]], styles: ["input[type=text][_ngcontent-%COMP%], input[type=password][_ngcontent-%COMP%] {\r\n    width: 100%;\r\n    padding: 12px 20px;\r\n    margin: 8px 0;\r\n    display: inline-block;\r\n    border: 1px solid #ccc;\r\n    box-sizing: border-box;\r\n}\r\n\r\nbutton[_ngcontent-%COMP%] {\r\n    background-color: #4fc3f7;\r\n    color: white;\r\n    padding: 14px 20px;\r\n    margin: 8px 0;\r\n    border: none;\r\n    cursor: pointer;\r\n    width: 100%;\r\n}\r\n\r\nbutton[_ngcontent-%COMP%]:hover {\r\n    opacity: 0.8;\r\n}\r\n\r\n.imgcontainer[_ngcontent-%COMP%] {\r\n    text-align: center;\r\n    margin: 24px 0 12px 0;\r\n}\r\n\r\nimg.avatar[_ngcontent-%COMP%] {\r\n    width: 40%;\r\n    border-radius: 50%;\r\n}\r\n\r\n\r\n\r\n@media screen and (max-width: 300px) {\r\n    span.psw[_ngcontent-%COMP%] {\r\n        display: block;\r\n        float: none;\r\n    }\r\n    .cancelbtn[_ngcontent-%COMP%] {\r\n        width: 100%;\r\n    }\r\n}\r\n\r\n\r\n\r\n@media screen and (max-width: 600px) {\r\n    img.avatar[_ngcontent-%COMP%] {\r\n        width: 100%;\r\n    }\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9sb2dpbi9sb2dpbi5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztJQUVJLFdBQVc7SUFDWCxrQkFBa0I7SUFDbEIsYUFBYTtJQUNiLHFCQUFxQjtJQUNyQixzQkFBc0I7SUFDdEIsc0JBQXNCO0FBQzFCOztBQUVBO0lBQ0kseUJBQXlCO0lBQ3pCLFlBQVk7SUFDWixrQkFBa0I7SUFDbEIsYUFBYTtJQUNiLFlBQVk7SUFDWixlQUFlO0lBQ2YsV0FBVztBQUNmOztBQUVBO0lBQ0ksWUFBWTtBQUNoQjs7QUFFQTtJQUNJLGtCQUFrQjtJQUNsQixxQkFBcUI7QUFDekI7O0FBRUE7SUFDSSxVQUFVO0lBQ1Ysa0JBQWtCO0FBQ3RCOztBQUdBLG9FQUFvRTs7QUFFcEU7SUFDSTtRQUNJLGNBQWM7UUFDZCxXQUFXO0lBQ2Y7SUFDQTtRQUNJLFdBQVc7SUFDZjtBQUNKOztBQUdBLDBFQUEwRTs7QUFFMUU7SUFDSTtRQUNJLFdBQVc7SUFDZjtBQUNKIiwiZmlsZSI6InNyYy9hcHAvY29tcG9uZW50cy9sb2dpbi9sb2dpbi5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiaW5wdXRbdHlwZT10ZXh0XSxcclxuaW5wdXRbdHlwZT1wYXNzd29yZF0ge1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgICBwYWRkaW5nOiAxMnB4IDIwcHg7XHJcbiAgICBtYXJnaW46IDhweCAwO1xyXG4gICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xyXG4gICAgYm9yZGVyOiAxcHggc29saWQgI2NjYztcclxuICAgIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XHJcbn1cclxuXHJcbmJ1dHRvbiB7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjNGZjM2Y3O1xyXG4gICAgY29sb3I6IHdoaXRlO1xyXG4gICAgcGFkZGluZzogMTRweCAyMHB4O1xyXG4gICAgbWFyZ2luOiA4cHggMDtcclxuICAgIGJvcmRlcjogbm9uZTtcclxuICAgIGN1cnNvcjogcG9pbnRlcjtcclxuICAgIHdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG5idXR0b246aG92ZXIge1xyXG4gICAgb3BhY2l0eTogMC44O1xyXG59XHJcblxyXG4uaW1nY29udGFpbmVyIHtcclxuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcclxuICAgIG1hcmdpbjogMjRweCAwIDEycHggMDtcclxufVxyXG5cclxuaW1nLmF2YXRhciB7XHJcbiAgICB3aWR0aDogNDAlO1xyXG4gICAgYm9yZGVyLXJhZGl1czogNTAlO1xyXG59XHJcblxyXG5cclxuLyogQ2hhbmdlIHN0eWxlcyBmb3Igc3BhbiBhbmQgY2FuY2VsIGJ1dHRvbiBvbiBleHRyYSBzbWFsbCBzY3JlZW5zICovXHJcblxyXG5AbWVkaWEgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiAzMDBweCkge1xyXG4gICAgc3Bhbi5wc3cge1xyXG4gICAgICAgIGRpc3BsYXk6IGJsb2NrO1xyXG4gICAgICAgIGZsb2F0OiBub25lO1xyXG4gICAgfVxyXG4gICAgLmNhbmNlbGJ0biB7XHJcbiAgICAgICAgd2lkdGg6IDEwMCU7XHJcbiAgICB9XHJcbn1cclxuXHJcblxyXG4vKiBPbiBzY3JlZW5zIHRoYXQgYXJlIDYwMHB4IHdpZGUgb3IgbGVzcywgdGhlIGJhY2tncm91bmQgY29sb3IgaXMgb2xpdmUgKi9cclxuXHJcbkBtZWRpYSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDYwMHB4KSB7XHJcbiAgICBpbWcuYXZhdGFyIHtcclxuICAgICAgICB3aWR0aDogMTAwJTtcclxuICAgIH1cclxufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](LoginComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -2134,9 +2137,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class AuthenticationService {
-    constructor(httpClient, router, notifierService, _cookieService) {
-        this.httpClient = httpClient;
-        this.router = router;
+    constructor(_httpClient, _router, notifierService, _cookieService) {
+        this._httpClient = _httpClient;
+        this._router = _router;
         this._cookieService = _cookieService;
         this.emitChangeSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
         this.httpOptions = {
@@ -2150,18 +2153,18 @@ class AuthenticationService {
     }
     handleUserRoute() {
         if (this._cookieService.get('userLevel') === '2') {
-            this.router.navigateByUrl('/');
-            this.notifier.notify('error', 'You does not permission');
+            this._router.navigateByUrl('/');
+            this.notifier.notify('error', 'You have not permission');
         }
         return;
     }
     handleLoginSessionExpires() {
         this._cookieService.deleteAll();
         this.notifier.notify('error', 'Login Session Expires!');
-        this.router.navigateByUrl('/login');
+        this._router.navigateByUrl('/login');
     }
     login(userLogin) {
-        return this.httpClient.post('/auth/login', userLogin, this.httpOptions);
+        return this._httpClient.post('/auth/login', userLogin, this.httpOptions);
     }
 }
 AuthenticationService.ɵfac = function AuthenticationService_Factory(t) { return new (t || AuthenticationService)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_0__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](angular_notifier__WEBPACK_IMPORTED_MODULE_4__["NotifierService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](ngx_cookie_service__WEBPACK_IMPORTED_MODULE_5__["CookieService"])); };

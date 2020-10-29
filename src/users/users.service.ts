@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-const bcrypt = require('bcrypt');
+import * as bcrypt from 'bcrypt'
 
 export type User = any;
 
