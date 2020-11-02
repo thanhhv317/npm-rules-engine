@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppInternalController } from './appInternal.controller';
 import { AppInternalService } from './appInternal.service';
 import { AuthModule } from './auth/auth.module';
+import { HistoryModule } from './history/history.module';
 import { RuleModule } from './rule/rule.module';
 import { UsersModule } from './users/users.module';
 
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
     RuleModule,
     AuthModule,
     UsersModule,
+    HistoryModule,
   ],
   controllers: [AppInternalController],
   providers: [AppInternalService],

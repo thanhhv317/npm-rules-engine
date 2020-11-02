@@ -4,6 +4,7 @@ import { RuleService } from './rule.service';
 
 @Controller('rules')
 export class RuleController {
+    
     constructor(private ruleService: RuleService) { }
 
 
@@ -30,7 +31,7 @@ export class RuleController {
                 case 'get_rule': {
                     let { ruleID } = body;
                     const rule = await this.ruleService.getRule(ruleID);
-                    if (!rule) throw new NotFoundException("Rule does not exit!");
+                    if (!rule) throw new NotFoundException("Rule does not exist!");
                     return res.status(HttpStatus.OK).json(rule);
                 }
                 case 'create': {
@@ -54,7 +55,7 @@ export class RuleController {
                     }
                     let { ruleID, createRuleDTO } = body;
                     const updateRule = await this.ruleService.updateRuleByID(ruleID, createRuleDTO);
-                    if (!updateRule) throw new NotFoundException("Rule does not exit!")
+                    if (!updateRule) throw new NotFoundException("Rule does not exist!")
                     return res.status(HttpStatus.OK).json({
                         updateRule
                     })
@@ -67,7 +68,7 @@ export class RuleController {
                     }
                     let { ruleID } = body;
                     const deleteRule = await this.ruleService.deleteRuleByID(ruleID);
-                    if (!deleteRule) throw new NotFoundException("Rule does not exit!");
+                    if (!deleteRule) throw new NotFoundException("Rule does not exist!");
                     return res.status(HttpStatus.OK).json({
                         deleteRule
                     })
