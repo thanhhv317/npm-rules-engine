@@ -9,8 +9,8 @@ export class RuleService {
     constructor(@InjectModel('Rule') private readonly ruleModel: Model<Rule>) { }
 
     // create rule
-    async createRule(createRuleCTO: CreateRuleDTO): Promise<Rule> {
-        const rule = new this.ruleModel(createRuleCTO);
+    async createRule(createRuleCTO: CreateRuleDTO, userCreate : String): Promise<Rule> {
+        const rule = new this.ruleModel({...createRuleCTO, userCreate});
         return rule.save();
     }
 

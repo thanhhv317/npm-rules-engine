@@ -12,7 +12,7 @@ export class RuleController {
     @Post('')
     async handleData(@Res() res, @Body() body: any, @Req() req) {
         try {
-            let { level } = req.user;
+            let { level, username } = req.user;
             let { action } = body;
             switch (action) {
                 case 'get_list': {
@@ -41,7 +41,7 @@ export class RuleController {
                         });
                     }
                     let { createRuleDTO } = body;
-                    const createRule = await this.ruleService.createRule(createRuleDTO);
+                    const createRule = await this.ruleService.createRule(createRuleDTO, username);
                     if (!createRule) throw new NotFoundException("Create failed");
                     return res.status(HttpStatus.OK).json({
                         createRule

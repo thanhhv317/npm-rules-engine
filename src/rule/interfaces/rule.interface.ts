@@ -11,4 +11,5 @@ export interface Rule extends Document {
     readonly type: string;
     readonly event: string;
     readonly conditions: string;
+    readonly userCreate: String;
 }

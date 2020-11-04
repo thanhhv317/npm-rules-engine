@@ -11,7 +11,8 @@ export const RuleSchema = new Schema({
     description: String,
     type: String,
     event: String,
-    conditions: String
+    conditions: String,
+    userCreate: String,
 }, {
     timestamps: true,
 })
